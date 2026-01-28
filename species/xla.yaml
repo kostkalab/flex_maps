@@ -1,0 +1,22 @@
+# Human (Homo sapiens) configuration
+
+species_code: xla
+name: Xenopus laevis
+
+# Minimum fraction of module enzymes that must map to species genes
+min_enzyme_coverage: 0.66
+
+# Modules to include even without species-specific KEGG submaps
+# Provide rationale for any rescued modules in-line
+rescue_modules:
+   - M00088 # Ketone body biosynthesis, acetyl-CoA => acetoacetate/3-hydroxybutyrate/acetone
+   - M00093 # Phosphatidylethanolamine (PE) biosynthesis, PA => PS => PE
+   - M00104 # Bile acid biosynthesis, cholesterol => cholate/chenodeoxycholate
+   - M00106 # Conjugated bile acid biosynthesis, cholate => taurocholate/glycocholate
+   - M00147 # NADH dehydrogenase (ubiquinone) 1 beta subcomplex
+   - M00158 # F-type ATPase, eukaryotes
+   - M00367 # C10-C20 isoprenoid biosynthesis, non-plant eukaryotes
+
+excluded_modules:
+
+output_prefix: xenopus-laevis_kegg_graph_pruned_annotated

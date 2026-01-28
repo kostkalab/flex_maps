@@ -1,0 +1,19 @@
+# Human (Homo sapiens) configuration
+
+species_code: hsa
+name: Homo sapiens
+
+# Minimum fraction of module enzymes that must map to species genes
+min_enzyme_coverage: 0.66
+
+# Modules to include even without species-specific KEGG submaps
+# Provide rationale for any rescued modules in-line
+rescue_modules:
+  - M00978 # Ornithine-ammonia cycle (urea cycle coverage gaps)
+  - M00367 # C10-C20 isoprenoid biosynthesis, non-plant eukaryotes
+  - M00088 # Ketone body biosynthesis, acetyl-CoA => acetoacetate/3-hydroxybutyrate/acetone
+# Modules to exclude even if coverage threshold is met
+
+excluded_modules:
+
+output_prefix: human_kegg_graph_pruned_annotated

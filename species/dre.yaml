@@ -1,0 +1,20 @@
+# Human (Homo sapiens) configuration
+
+species_code: dre
+name: Danio rerio
+
+# Minimum fraction of module enzymes that must map to species genes
+min_enzyme_coverage: 0.66
+
+# Modules to include even without species-specific KEGG submaps
+# Provide rationale for any rescued modules in-line
+rescue_modules:
+   - M00129 # Ascorbate biosynthesis, animals, glucose-1P => ascorbate 
+   - M00056 # O-glycan biosynthesis, mucin type core
+   - M00056 # GPI-anchor biosynthesis, core oligosaccharide
+   - M00367 # C10-C20 isoprenoid biosynthesis, non-plant eukaryotes
+   - M00088 # Ketone body biosynthesis, acetyl-CoA => acetoacetate/3-hydroxybutyrate/acetone
+
+excluded_modules:
+
+output_prefix: zebrafish_kegg_graph_pruned_annotated

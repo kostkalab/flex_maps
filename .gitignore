@@ -1,0 +1,31 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.log
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+.env
+
+# Editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Data caches and external downloads
+data/
+
+# Pipeline outputs
+results/
+
+# Generated reports/archives staging
+maps/*.tmp
+
+# Misc
+*.swp
+*.swo
