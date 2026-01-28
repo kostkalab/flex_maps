@@ -4,10 +4,10 @@ This repository constructs species-specific metabolic reaction graphs by integra
 
 ## Download links for maps
 
-- Human ([map](./maps/human_kegg_graph_pruned_annotated.20260127_203125.graphml.gz), [stats](./maps/human_kegg_graph_pruned_annotated.20260127_203125.pdf))
-- Mouse ([map](./maps/mouse_kegg_graph_pruned_annotated.20260127_203125.graphml.gz), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260127_203125.pdf))
-- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260127_203125.graphml.gz), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260127_203125.pdf))
-- Zebrafish ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260127_203125.graphml.gz), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260127_203125.pdf))
+- Human ([map](./maps/human_kegg_graph_pruned_annotated.20260127_203125.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260127_203125.pdf))
+- Mouse ([map](./maps/mouse_kegg_graph_pruned_annotated.20260127_203125.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260127_203125.pdf))
+- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260127_203125.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260127_203125.pdf))
+- Zebrafish ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260127_203125.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260127_203125.pdf))
 
 ## Strategy used to create maps
 
@@ -62,6 +62,7 @@ metabolic-maps/
 │   └── pipeline.py      # Orchestration, PDF report
 ├── species/
 │   ├── mmu.yaml         # Mouse config (includes rescued modules)
+│   ├── ...
 │   └── hsa.yaml         # Human config
 ├── data/                # Cached downloads (gitignored)
 │   ├── kegg/            # KEGG tables and gene annotations
