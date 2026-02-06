@@ -1,4 +1,4 @@
-name: flex_map_env
+name: flex_maps_env
 channels:
   - conda-forge
 dependencies:

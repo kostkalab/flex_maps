@@ -2,6 +2,7 @@
 
 species_code: hsa
 name: Homo sapiens
+ncbi_taxonomy_id: 9606
 
 # Minimum fraction of module enzymes that must map to species genes
 min_enzyme_coverage: 0.66

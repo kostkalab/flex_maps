@@ -18,6 +18,7 @@ def load_config(config_path: Path) -> SpeciesConfig:
     return SpeciesConfig(
         species_code=data["species_code"],
         name=data["name"],
+        ncbi_taxonomy_id=str(data.get("ncbi_taxonomy_id", "")),
         min_enzyme_coverage=data.get("min_enzyme_coverage", 0.66),
         rescue_modules=data.get("rescue_modules") or [],
         excluded_modules=data.get("excluded_modules") or [],

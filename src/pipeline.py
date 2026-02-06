@@ -17,6 +17,7 @@ class SpeciesConfig:
 
     species_code: str
     name: str
+    ncbi_taxonomy_id: str = ""
     min_enzyme_coverage: float = 0.66
     rescue_modules: list[str] = field(default_factory=list)
     excluded_modules: list[str] = field(default_factory=list)
@@ -214,7 +215,9 @@ def run_pipeline(
     species_pathways = kegg.load_species_pathways(kegg_dir, config.species_code, kegg_header)
     pathway_to_rn = kegg.load_pathway_to_reaction(kegg_dir, kegg_header)
     pathway_names = kegg.load_pathway_names(kegg_dir, kegg_header)
-    gene_annot = kegg.load_gene_annotations(kegg_dir, config.species_code, kegg_header)
+    gene_annot = kegg.load_gene_annotations(
+        kegg_dir, config.species_code, kegg_header, config.ncbi_taxonomy_id
+    )
 
     # Build reaction sets
     print("Building reaction sets...")

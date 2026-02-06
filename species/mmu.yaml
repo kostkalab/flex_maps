@@ -2,6 +2,7 @@
 
 species_code: mmu
 name: Mus musculus
+ncbi_taxonomy_id: 10090
 
 # Minimum fraction of module enzymes that must map to species genes
 min_enzyme_coverage: 0.66

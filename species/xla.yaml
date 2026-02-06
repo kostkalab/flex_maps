@@ -1,7 +1,8 @@
-# Human (Homo sapiens) configuration
+# Xenopus laevis (African clawed frog) configuration
 
 species_code: xla
 name: Xenopus laevis
+ncbi_taxonomy_id: 8355
 
 # Minimum fraction of module enzymes that must map to species genes
 min_enzyme_coverage: 0.66

@@ -1,7 +1,8 @@
-# Human (Homo sapiens) configuration
+# Zebrafish (Danio rerio) configuration
 
 species_code: dre
 name: Danio rerio
+ncbi_taxonomy_id: 7955
 
 # Minimum fraction of module enzymes that must map to species genes
 min_enzyme_coverage: 0.66
