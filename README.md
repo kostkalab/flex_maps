@@ -32,6 +32,7 @@ This repository constructs species-specific metabolic reaction graphs by integra
   - `map00010` — Pathway (KEGG)
   - `mmu:100037283` — Gene (KEGG/NCBI)
 - **Additional node attributes**:
+  - Compound: `compound_name`
   - Gene: `gene_symbol`, `ensembl_id`, `ncbi_gene_id`
   - Module: `module_name`
   - Pathway: `pathway_name`

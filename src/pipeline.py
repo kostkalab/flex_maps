@@ -215,6 +215,7 @@ def run_pipeline(
     species_pathways = kegg.load_species_pathways(kegg_dir, config.species_code, kegg_header)
     pathway_to_rn = kegg.load_pathway_to_reaction(kegg_dir, kegg_header)
     pathway_names = kegg.load_pathway_names(kegg_dir, kegg_header)
+    compound_names = kegg.load_compound_names(kegg_dir, kegg_header)
     gene_annot = kegg.load_gene_annotations(
         kegg_dir, config.species_code, kegg_header, config.ncbi_taxonomy_id
     )
@@ -290,6 +291,25 @@ def run_pipeline(
 
     print("Pruning dead-end metabolites...")
     G, removed_mets, removed_rxns = graph.prune_dead_ends(G, reversible=True)
+
+    # Annotate compound names (KEGG common name = first entry)
+    print("Adding compound names...")
+    compound_names = compound_names.copy()
+    compound_names["compound_name"] = compound_names["compound_name"].astype(str)
+    compound_names["compound_name"] = (
+        compound_names["compound_name"].str.split(";").str[0].str.strip()
+    )
+    compound_name_map = dict(
+        zip(compound_names["compound"], compound_names["compound_name"], strict=False)
+    )
+    for node, data in G.nodes(data=True):
+        if data.get("group") != "Compound":
+            continue
+        cid = data.get("name") or node.replace("kegg:", "", 1)
+        common_name = compound_name_map.get(cid, "NA")
+        if pd.isna(common_name) or common_name == "":
+            common_name = "NA"
+        G.nodes[node]["compound_name"] = common_name
 
     # Annotate with genes
     print("Adding gene annotations...")
@@ -425,6 +445,7 @@ Each node has a `group` attribute: `Compound`, `Reaction`, `Gene`, `Module`, or 
 
 | Group | Attributes |
 |-------|------------|
+| Compound | `compound_name` |
 | Gene | `gene_symbol`, `ensembl_id`, `ncbi_gene_id` |
 | Module | `module_name` |
 | Pathway | `pathway_name` |

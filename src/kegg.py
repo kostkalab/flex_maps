@@ -27,8 +27,12 @@ def clean_columns(df: pd.DataFrame) -> pd.DataFrame:
 def make_kegg_header() -> str:
     """Fetch KEGG version info and format as a comment header."""
     url = "https://rest.kegg.jp/info/kegg"
-    response = requests.get(url, timeout=30)
-    kegg_info = response.text.strip()
+    try:
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        kegg_info = response.text.strip()
+    except requests.RequestException:
+        kegg_info = "KEGG data version: unavailable (offline)"
     now = datetime.now()
     date_str = now.strftime("%Y-%m-%d %H:%M:%S")
     header = f"KEGG data version:\n{kegg_info}\nRetrieved on: {date_str}"
@@ -334,6 +338,16 @@ def load_pathway_names(kegg_dir: Path, header: str) -> pd.DataFrame:
         url="https://rest.kegg.jp/list/pathway",
         columns=["pathway", "pathway_name"],
         prefix_strip={"pathway": "path:"},
+        header=header,
+    )
+
+
+def load_compound_names(kegg_dir: Path, header: str) -> pd.DataFrame:
+    """Load KEGG compound names."""
+    return _download_or_load(
+        path=kegg_dir / "dn_compound_names.csv",
+        url="https://rest.kegg.jp/list/compound",
+        columns=["compound", "compound_name"],
         header=header,
     )
 
