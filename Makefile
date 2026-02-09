@@ -17,6 +17,7 @@ RESULTS_DIR := results
 SPECIES_DIR := species
 SRC_DIR := src
 MAPS_DIR := maps
+UPDATE_README := $(SRC_DIR)/update_readme_links.py
 
 # External dependencies
 METANETX_TTL := $(DATA_DIR)/metanetx/MNXref.ttl
@@ -111,13 +112,14 @@ help:
 	@echo "  make list            List available species"
 	@echo "  make clean           Remove all outputs"
 	@echo "  make clean-<species> Remove outputs for one species"
-	@echo "  make dist            Package latest PDFs + GraphML.gz into $(MAPS_DIR)/"
+	@echo "  make dist            Package latest PDFs + GraphML.gz into $(MAPS_DIR)/ and update README links"
 	@echo ""
 	@echo "Available species: $(SPECIES_CODES)"
 
 .PHONY: dist
 dist: $(SPECIES_CODES)
 	@mkdir -p $(MAPS_DIR)
+	@rm -f $(MAPS_DIR)/*.graphml.gz $(MAPS_DIR)/*.pdf
 	@for code in $(SPECIES_CODES); do \
 		sp_dir=$(RESULTS_DIR)/$$code; \
 		graphml=$$(ls -t $$sp_dir/*.graphml 2>/dev/null | head -n 1); \
@@ -134,3 +136,4 @@ dist: $(SPECIES_CODES)
 		cp "$$pdf" "$$out_pdf"; \
 		echo "Packaged $$code -> $(MAPS_DIR)/"; \
 	done
+	@$(PYTHON) $(UPDATE_README)
