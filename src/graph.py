@@ -13,13 +13,24 @@ def get_largest_component(G: nx.DiGraph) -> tuple[nx.DiGraph, int]:
 
 def prune_dead_ends(
     G: nx.DiGraph,
+    mode: str = "keep_bridges",
 ) -> tuple[nx.DiGraph, list[str], list[str], list[str], list[str], list[str]]:
     """
     Iteratively prune a bipartite reaction/compound graph.
 
-    Criteria (direction ignored):
-    - Each Reaction must have >= 2 Compound neighbors.
+    Compound criterion (both modes, direction ignored):
     - Each Compound must have >= 2 Reaction neighbors.
+
+    Reaction criterion depends on *mode*:
+    - ``"keep_all"``     (default) – keep reaction if it has >= 2 Compound
+                         neighbors (direction ignored).  This is the original
+                         behaviour.
+    - ``"keep_bridges"`` – keep reaction only if it has >= 1 input Compound
+                         (predecessor) **and** >= 1 output Compound (successor).
+                         Stricter: ensures the reaction is a proper bridge
+                         between compounds rather than just touching two nodes
+                         on the same side.
+
     After pruning, remove Genes/Modules/Pathways with no Reaction neighbors.
 
     Returns:
@@ -32,6 +43,9 @@ def prune_dead_ends(
             removed_pathways,
         )
     """
+    if mode not in {"keep_all", "keep_bridges"}:
+        raise ValueError(f"Unknown mode {mode!r}. Use 'keep_all' or 'keep_bridges'.")
+
     g = G.copy()
 
     while True:
@@ -47,11 +61,23 @@ def prune_dead_ends(
                 if len(rxn_neighbors) < 2:
                     to_remove.append(n)
             elif group == "Reaction":
-                cpd_neighbors = [
-                    nbr for nbr in neighbors if g.nodes[nbr].get("group") == "Compound"
-                ]
-                if len(cpd_neighbors) < 2:
-                    to_remove.append(n)
+                if mode == "keep_all":
+                    cpd_neighbors = [
+                        nbr for nbr in neighbors if g.nodes[nbr].get("group") == "Compound"
+                    ]
+                    if len(cpd_neighbors) < 2:
+                        to_remove.append(n)
+                else:  # keep_bridges
+                    input_cpds = [
+                        nbr for nbr in g.predecessors(n)
+                        if g.nodes[nbr].get("group") == "Compound"
+                    ]
+                    output_cpds = [
+                        nbr for nbr in g.successors(n)
+                        if g.nodes[nbr].get("group") == "Compound"
+                    ]
+                    if not input_cpds or not output_cpds:
+                        to_remove.append(n)
 
         if not to_remove:
             break
