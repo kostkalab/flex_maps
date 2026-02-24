@@ -290,7 +290,9 @@ def run_pipeline(
     G, num_components = graph.get_largest_component(G)
 
     print("Pruning dead-end metabolites...")
-    G, removed_mets, removed_rxns = graph.prune_dead_ends(G, reversible=True)
+    G, removed_mets, removed_rxns, removed_gens, removed_mdls, removed_pwys = (
+        graph.prune_dead_ends(G)
+    )
 
     # Annotate compound names (KEGG common name = first entry)
     print("Adding compound names...")
@@ -373,6 +375,9 @@ def run_pipeline(
         "num_components": num_components,
         "pruned_metabolites": len(removed_mets),
         "pruned_reactions": len(removed_rxns),
+        "pruned_genes": len(removed_gens),
+        "pruned_modules": len(removed_mdls),
+        "pruned_pathways": len(removed_pwys),
         **{f"nodes_{k.lower()}": v for k, v in counts.items()},
         "edges": G.number_of_edges(),
     }

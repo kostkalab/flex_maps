@@ -12,49 +12,76 @@ def get_largest_component(G: nx.DiGraph) -> tuple[nx.DiGraph, int]:
 
 
 def prune_dead_ends(
-    G: nx.DiGraph, reversible: bool = False
-) -> tuple[nx.DiGraph, list[str], list[str]]:
+    G: nx.DiGraph,
+) -> tuple[nx.DiGraph, list[str], list[str], list[str], list[str], list[str]]:
     """
-    Recursively remove dead-end metabolites and their associated reactions.
-    
-    Dead-end metabolites are compounds with no producers or no consumers.
-    If reversible=True, treats edges as undirected (degree <= 1).
-    
+    Iteratively prune a bipartite reaction/compound graph.
+
+    Criteria (direction ignored):
+    - Each Reaction must have >= 2 Compound neighbors.
+    - Each Compound must have >= 2 Reaction neighbors.
+    After pruning, remove Genes/Modules/Pathways with no Reaction neighbors.
+
     Returns:
-        Tuple of (pruned_graph, removed_metabolites, removed_reactions)
+        Tuple of (
+            pruned_graph,
+            removed_metabolites,
+            removed_reactions,
+            removed_genes,
+            removed_modules,
+            removed_pathways,
+        )
     """
     g = G.copy()
-    removed_mets = []
-    removed_rxns = []
 
     while True:
-        if reversible:
-            dead_mets = [
-                m for m, data in g.nodes(data=True)
-                if data.get("group") == "Compound" and g.degree(m) <= 1
-            ]
-        else:
-            dead_mets = [
-                m for m, data in g.nodes(data=True)
-                if data.get("group") == "Compound"
-                and (g.in_degree(m) == 0 or g.out_degree(m) == 0)
-            ]
+        to_remove = []
+        for n, data in g.nodes(data=True):
+            group = data.get("group")
+            neighbors = set(g.predecessors(n)) | set(g.successors(n))
 
-        if not dead_mets:
+            if group == "Compound":
+                rxn_neighbors = [
+                    nbr for nbr in neighbors if g.nodes[nbr].get("group") == "Reaction"
+                ]
+                if len(rxn_neighbors) < 2:
+                    to_remove.append(n)
+            elif group == "Reaction":
+                cpd_neighbors = [
+                    nbr for nbr in neighbors if g.nodes[nbr].get("group") == "Compound"
+                ]
+                if len(cpd_neighbors) < 2:
+                    to_remove.append(n)
+
+        if not to_remove:
             break
 
-        dead_rxns = set()
-        for m in dead_mets:
-            for nbr in list(g.predecessors(m)) + list(g.successors(m)):
-                if g.nodes[nbr].get("group") == "Reaction":
-                    dead_rxns.add(nbr)
+        g.remove_nodes_from(to_remove)
 
-        g.remove_nodes_from(dead_mets)
-        g.remove_nodes_from(dead_rxns)
-        removed_mets.extend(dead_mets)
-        removed_rxns.extend(dead_rxns)
+    # Drop non-reaction nodes that no longer connect to any reactions.
+    orphan_groups = {"Gene", "Module", "Pathway"}
+    present_groups = {data.get("group") for _, data in g.nodes(data=True)}
+    if orphan_groups & present_groups:
+        orphans = []
+        for n, data in g.nodes(data=True):
+            if data.get("group") in orphan_groups:
+                neighbors = set(g.predecessors(n)) | set(g.successors(n))
+                has_reaction = any(
+                    g.nodes[nbr].get("group") == "Reaction" for nbr in neighbors
+                )
+                if not has_reaction:
+                    orphans.append(n)
+        if orphans:
+            g.remove_nodes_from(orphans)
 
-    return g, removed_mets, removed_rxns
+    removed = set(G.nodes) - set(g.nodes)
+    removed_mets = [n for n in removed if G.nodes[n].get("group") == "Compound"]
+    removed_rxns = [n for n in removed if G.nodes[n].get("group") == "Reaction"]
+    removed_gens = [n for n in removed if G.nodes[n].get("group") == "Gene"]
+    removed_mdls = [n for n in removed if G.nodes[n].get("group") == "Module"]
+    removed_pwys = [n for n in removed if G.nodes[n].get("group") == "Pathway"]
+
+    return g, removed_mets, removed_rxns, removed_gens, removed_mdls, removed_pwys
 
 
 def add_gene_annotations(
