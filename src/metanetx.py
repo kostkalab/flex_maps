@@ -189,10 +189,17 @@ def build_kegg_digraph(
             continue
 
         rxn_node = f"kegg:{kegg_rxn}"
-        if rxn_node not in G:
-            G.add_node(rxn_node, group="Reaction", name=kegg_rxn)
-
         comment = rxn_comments.get(kegg_rxn, "")
+        raw_reaction = comment.split("||", 1)[-1] if "||" in comment else comment
+        if rxn_node not in G:
+            G.add_node(
+                rxn_node,
+                group="Reaction",
+                name=kegg_rxn,
+                raw_reaction=raw_reaction,
+            )
+        elif raw_reaction and not G.nodes[rxn_node].get("raw_reaction"):
+            G.nodes[rxn_node]["raw_reaction"] = raw_reaction
 
         for mnxr in mnxrs:
             structure = rxn_structure.get(mnxr)

@@ -4,10 +4,10 @@ This repository constructs species-specific metabolic reaction graphs by integra
 
 ## Download links for maps
 
-- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260224_174949.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260224_174949.pdf))
-- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260224_174949.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260224_174949.pdf))
-- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260224_174949.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260224_174949.pdf))
-- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260224_174949.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260224_174949.pdf))
+- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260702_143809.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260702_143809.pdf))
+- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260702_143809.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260702_143809.pdf))
+- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260702_143809.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260702_143809.pdf))
+- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260702_143809.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260702_143809.pdf))
 
 ## Strategy used to create maps
 

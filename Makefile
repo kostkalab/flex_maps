@@ -122,7 +122,7 @@ dist: $(SPECIES_CODES)
 	@rm -f $(MAPS_DIR)/*.graphml.gz $(MAPS_DIR)/*.pdf
 	@for code in $(SPECIES_CODES); do \
 		sp_dir=$(RESULTS_DIR)/$$code; \
-		graphml=$$(ls -t $$sp_dir/*.graphml 2>/dev/null | head -n 1); \
+		graphml=$$(find $$sp_dir -maxdepth 1 -name '*.graphml' ! -name '*.full*.graphml' -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-); \
 		pdf=$$(ls -t $$sp_dir/*.pdf 2>/dev/null | head -n 1); \
 		if [ -z "$$graphml" ]; then \
 			echo "ERROR: No GraphML found for $$code. Run make $$code first."; exit 1; \

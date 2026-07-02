@@ -7,6 +7,7 @@ from pathlib import Path
 
 import yaml
 
+from src.chem import DEFAULT_KEGG_SMILES_URL
 from src.pipeline import SpeciesConfig, run_pipeline, generate_report
 
 
@@ -66,6 +67,15 @@ def main():
         default=None,
         help="Timestamp for output filename (default: current time)",
     )
+    parser.add_argument(
+        "--smiles-map",
+        type=str,
+        default=DEFAULT_KEGG_SMILES_URL,
+        help=(
+            "Path or URL for KEGG compound SMILES table or pickle(.gz) "
+            f"(default: {DEFAULT_KEGG_SMILES_URL})"
+        ),
+    )
 
     parser.add_argument(
         "--no-report",
@@ -91,6 +101,7 @@ def main():
         metanetx_ttl=args.metanetx,
         timestamp=args.timestamp,
         kegg_only=args.kegg_only,
+        smiles_source=args.smiles_map,
     )
 
     print(f"\nPipeline complete. Metrics:")

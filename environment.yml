@@ -13,6 +13,8 @@ dependencies:
   - make
   - numpy
   - pandas
+  - pyarrow
+  - rdkit
   - requests
   - tqdm
   - networkx

@@ -8,7 +8,7 @@ import pandas as pd
 from weasyprint import HTML, CSS
 from markdown import markdown
 
-from . import kegg, metanetx, graph
+from . import chem, graph, kegg, metanetx, reactions
 
 
 @dataclass
@@ -177,6 +177,7 @@ def run_pipeline(
     metanetx_ttl: Path | None,
     timestamp: str | None = None,
     kegg_only: bool = False,
+    smiles_source: str | Path | None = None,
 ) -> PipelineResult:
     """
     Run the full pipeline for a species.
@@ -354,6 +355,125 @@ def run_pipeline(
     pathway_rns = pathway_rns[~pathway_rns["path"].str.startswith("rn")]
     graph.add_pathway_annotations(G, pathway_rns)
 
+    # Add orientation/SMILES annotations, save the full graph, then filter to the
+    # SMILES-supported graph used by downstream embeddings.
+    print("Loading joint KEGG SMILES...")
+    smiles_records = chem.load_kegg_smiles_records(smiles_source, kegg_dir)
+    suffix = f".{timestamp}" if timestamp else ""
+
+    print("Annotating full graph with reaction orientation and SMILES...")
+    reactions.build_oriented_reaction_table(G, smiles_map=smiles_records)
+
+    full_graph_path = (
+        species_output_dir / f"{config.output_prefix}.full{suffix}.graphml"
+    )
+    nx.write_graphml(G, full_graph_path)
+    print(f"Full graph written to {full_graph_path}")
+
+    print("Filtering graph to SMILES-supported reactions...")
+    G, smiles_dropped_reactions = reactions.filter_smiles_supported_graph(G)
+    smiles_initial_drop_count = len(smiles_dropped_reactions)
+
+    print("Pruning dead ends after SMILES filtering...")
+    smiles_prune_input_graph = G.copy()
+    (
+        G,
+        smiles_removed_mets,
+        smiles_removed_rxns,
+        smiles_removed_gens,
+        smiles_removed_mdls,
+        smiles_removed_pwys,
+    ) = graph.prune_dead_ends(G)
+
+    if smiles_removed_rxns:
+        extra_rxn_rows = []
+        for node in sorted(smiles_removed_rxns):
+            node_data = (
+                smiles_prune_input_graph.nodes[node]
+                if node in smiles_prune_input_graph
+                else {}
+            )
+            status = (
+                reactions.reaction_side_status(smiles_prune_input_graph, node)
+                if node in smiles_prune_input_graph
+                else {
+                    "input_compounds": [],
+                    "output_compounds": [],
+                    "input_smiles_present": [],
+                    "output_smiles_present": [],
+                    "missing_input_compounds": [],
+                    "missing_output_compounds": [],
+                }
+            )
+            extra_rxn_rows.append(
+                {
+                    "reaction_node": node,
+                    "reaction_id": node_data.get("name") or node.replace("kegg:", "", 1),
+                    "drop_reason": "dead_end_after_smiles_filter",
+                    "input_compounds": reactions.join_compounds(
+                        status["input_compounds"]
+                    ),
+                    "output_compounds": reactions.join_compounds(
+                        status["output_compounds"]
+                    ),
+                    "input_smiles_present": reactions.join_compounds(
+                        status["input_smiles_present"]
+                    ),
+                    "output_smiles_present": reactions.join_compounds(
+                        status["output_smiles_present"]
+                    ),
+                    "missing_input_compounds": reactions.join_compounds(
+                        status["missing_input_compounds"]
+                    ),
+                    "missing_output_compounds": reactions.join_compounds(
+                        status["missing_output_compounds"]
+                    ),
+                }
+            )
+        smiles_dropped_reactions = pd.concat(
+            [smiles_dropped_reactions, pd.DataFrame(extra_rxn_rows)],
+            ignore_index=True,
+        )
+
+    smiles_dropped_compounds = pd.DataFrame(
+        [
+            {
+                "compound_node": node,
+                "compound_id": (
+                    smiles_prune_input_graph.nodes[node].get("name")
+                    if node in smiles_prune_input_graph
+                    else node.replace("kegg:", "", 1)
+                ),
+                "drop_reason": "dead_end_after_smiles_filter",
+            }
+            for node in sorted(smiles_removed_mets)
+        ],
+        columns=["compound_node", "compound_id", "drop_reason"],
+    )
+
+    dropped_reactions_path = (
+        species_output_dir
+        / f"{config.output_prefix}.smiles_dropped_reactions{suffix}.tsv"
+    )
+    dropped_compounds_path = (
+        species_output_dir
+        / f"{config.output_prefix}.smiles_dropped_compounds{suffix}.tsv"
+    )
+    smiles_dropped_reactions.to_csv(dropped_reactions_path, sep="\t", index=False)
+    smiles_dropped_compounds.to_csv(dropped_compounds_path, sep="\t", index=False)
+    print(f"SMILES dropped reactions written to {dropped_reactions_path}")
+    print(f"SMILES dropped compounds written to {dropped_compounds_path}")
+
+    reaction_table_path = (
+        species_output_dir / f"{config.output_prefix}.reactions{suffix}.tsv"
+    )
+    reaction_table = reactions.build_oriented_reaction_table(
+        G,
+        smiles_map=smiles_records,
+        output_path=reaction_table_path,
+    )
+    print(f"Reaction table written to {reaction_table_path}")
+
     # Save output
     if timestamp:
         filename = f"{config.output_prefix}.{timestamp}.graphml"
@@ -378,6 +498,16 @@ def run_pipeline(
         "pruned_genes": len(removed_gens),
         "pruned_modules": len(removed_mdls),
         "pruned_pathways": len(removed_pwys),
+        "smiles_filter_reactions_dropped_missing_side": smiles_initial_drop_count,
+        "smiles_filter_reactions_dropped_dead_end": len(smiles_removed_rxns),
+        "smiles_filter_compounds_dropped_dead_end": len(smiles_removed_mets),
+        "smiles_filter_genes_dropped_orphan": len(smiles_removed_gens),
+        "smiles_filter_modules_dropped_orphan": len(smiles_removed_mdls),
+        "smiles_filter_pathways_dropped_orphan": len(smiles_removed_pwys),
+        "reaction_table_rows": len(reaction_table),
+        "reaction_table_complete_smiles": int(
+            (reaction_table["missing_smiles_compounds"] == "").sum()
+        ),
         **{f"nodes_{k.lower()}": v for k, v in counts.items()},
         "edges": G.number_of_edges(),
     }
@@ -450,7 +580,8 @@ Each node has a `group` attribute: `Compound`, `Reaction`, `Gene`, `Module`, or 
 
 | Group | Attributes |
 |-------|------------|
-| Compound | `compound_name` |
+| Compound | `compound_name`, `smiles`, `smiles_source` |
+| Reaction | `raw_reaction`, `dg0`, `dg0_reaction`, `delta_g_status`, `balance_status`, `balance_compound`, `orientation`, `orientation_source`, `thermo_agrees_with_mnx`, `orientation_flip_from_mnx` |
 | Gene | `gene_symbol`, `ensembl_id`, `ncbi_gene_id` |
 | Module | `module_name` |
 | Pathway | `pathway_name` |
