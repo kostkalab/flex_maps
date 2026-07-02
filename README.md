@@ -20,7 +20,10 @@ This repository constructs species-specific metabolic reaction graphs by integra
 4. Find species KEGG pathways; add reactions in those pathways that have no enzymes (reactions with species enzymes are already included)
 5. Intersect this reaction set with MetaNetX to build a KEGG × MetaNetX graph
 6. Prune dead-end compounds
-7. Export GraphML and PDF report
+7. Annotate compounds with joint KEGG SMILES support and orient reaction sides
+8. Save an internal full GraphML, then drop reactions where all input compounds or all output compounds lack SMILES support
+9. Prune any dead-end compounds and orphan annotations created by the SMILES filter
+10. Export the SMILES-supported GraphML, reaction side table, drop reports, and PDF report
 
 ## Structure of the map/graph
 
@@ -32,7 +35,8 @@ This repository constructs species-specific metabolic reaction graphs by integra
   - `map00010` — Pathway (KEGG)
   - `mmu:100037283` — Gene (KEGG/NCBI)
 - **Additional node attributes**:
-  - Compound: `compound_name`
+  - Compound: `compound_name`, `smiles`, `smiles_source`
+  - Reaction: `raw_reaction`, `dg0`, `dg0_reaction`, `delta_g_status`, `balance_status`, `orientation`, `orientation_source`
   - Gene: `gene_symbol`, `ensembl_id`, `ncbi_gene_id`
   - Module: `module_name`
   - Pathway: `pathway_name`
@@ -127,10 +131,14 @@ python run.py species/mmu.yaml --metanetx data/metanetx/MNXref.ttl --output-dir 
 ### Outputs
 
 Full pipeline outputs are stored under `results/<species_code>/`:
-- `results/<species>/<prefix>.<timestamp>.graphml` — Metabolic graph
+- `results/<species>/<prefix>.<timestamp>.graphml` — Published SMILES-supported metabolic graph
+- `results/<species>/<prefix>.full.<timestamp>.graphml` — Internal unfiltered graph before SMILES support filtering
+- `results/<species>/<prefix>.reactions.<timestamp>.tsv` — Oriented reaction side table with input/output compounds and SMILES strings
+- `results/<species>/<prefix>.smiles_dropped_reactions.<timestamp>.tsv` — Reactions removed because an entire side lacked SMILES, plus dead-end cascade removals
+- `results/<species>/<prefix>.smiles_dropped_compounds.<timestamp>.tsv` — Compounds removed during post-SMILES dead-end pruning
 - `results/<species>/<prefix>.<timestamp>.pdf` — Summary report with schema documentation
 
-Run `make dist` to gzip the latest GraphML per species and copy it together with its PDF into `maps/` for publication.
+Run `make dist` to gzip the latest SMILES-supported GraphML per species and copy it together with its PDF into `maps/` for publication. The internal `*.full.*.graphml` files are retained in `results/` but are not published.
 
 KEGG-only mode outputs (also under `results/<species_code>/`):
 - `results/<species>/<prefix>.dropped_modules.<timestamp>.csv` — Modules that met coverage before being excluded
@@ -178,3 +186,11 @@ The pipeline supports any species in KEGG. The MyGene.info lookup for Ensembl ID
 - `hsa` — Human
 - `dre` — Zebrafish
 - `xla` — Xenopus laevis
+
+## Rationale for excluding non-SMILES network nodes
+
+The published maps are filtered to the small-molecule reaction network that can support structural embeddings and cheminformatics workflows. Reactions are removed only when an entire input side or output side lacks supported SMILES, because that side cannot be represented structurally.
+
+- **Mass-balance validation**: SMILES strings provide explicit molecular structure from which formulas can be derived. Generic placeholders, redox carriers without selected structures, and macromolecules lack defined small-molecule stoichiometry, making automated element and mass-balance checks unreliable.
+- **Property prediction**: Structural-activity and embedding pipelines depend on fixed molecular descriptors such as Morgan fingerprints. Variable fatty acid pools, generic classes, and protein-linked entities cannot be converted into uniform numerical vectors without adding unsupported assumptions.
+- **Scope definition**: Molecular graph tools such as RDKit are designed for small-molecule chemical spaces. Large protein carriers and enzyme-linked entities belong in the annotation or enzyme layer rather than the soluble metabolite layer used for graph embeddings.
