@@ -57,11 +57,16 @@ $(SPECIES_CODES): %: $(RESULTS_DIR)/.built.%
 $(RESULTS_DIR)/.built.%: $(SPECIES_DIR)/%.yaml $(SRC_FILES) $(METANETX_TTL)
 	@echo "=== Building $* metabolic map ==="
 	@mkdir -p $(RESULTS_DIR)
+	@dg0_args=""; \
+	if [ -f "$(RESULTS_DIR)/$*/reaction_dg0.tsv" ]; then \
+		dg0_args="--dg0-table $(RESULTS_DIR)/$*/reaction_dg0.tsv"; \
+	fi; \
 	$(PYTHON) run.py $< \
 		--metanetx $(METANETX_TTL) \
 		--data-dir $(DATA_DIR) \
 		--output-dir $(RESULTS_DIR) \
-		--timestamp $(TIMESTAMP)
+		--timestamp $(TIMESTAMP) \
+		$$dg0_args
 	@touch $@
 	@echo "=== $* complete ==="
 

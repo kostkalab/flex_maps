@@ -76,6 +76,12 @@ def main():
             f"(default: {DEFAULT_KEGG_SMILES_URL})"
         ),
     )
+    parser.add_argument(
+        "--dg0-table",
+        type=str,
+        default=None,
+        help="Optional TSV of reaction DG0 annotations keyed by KEGG reaction_id",
+    )
 
     parser.add_argument(
         "--no-report",
@@ -102,6 +108,7 @@ def main():
         timestamp=args.timestamp,
         kegg_only=args.kegg_only,
         smiles_source=args.smiles_map,
+        dg0_table=args.dg0_table,
     )
 
     print(f"\nPipeline complete. Metrics:")

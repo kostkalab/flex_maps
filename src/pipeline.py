@@ -8,7 +8,7 @@ import pandas as pd
 from weasyprint import HTML, CSS
 from markdown import markdown
 
-from . import chem, graph, kegg, metanetx, reactions
+from . import chem, graph, kegg, metanetx, reactions, thermo
 
 
 @dataclass
@@ -178,6 +178,7 @@ def run_pipeline(
     timestamp: str | None = None,
     kegg_only: bool = False,
     smiles_source: str | Path | None = None,
+    dg0_table: str | Path | None = None,
 ) -> PipelineResult:
     """
     Run the full pipeline for a species.
@@ -359,6 +360,10 @@ def run_pipeline(
     # SMILES-supported graph used by downstream embeddings.
     print("Loading joint KEGG SMILES...")
     smiles_records = chem.load_kegg_smiles_records(smiles_source, kegg_dir)
+    print("Loading reaction DG0 annotations...")
+    dg0_records = thermo.load_dg0_table(dg0_table)
+    thermo.annotate_graph_dg0(G, dg0_records)
+    print(f"  Loaded DG0 annotations for {len(dg0_records):,} reactions")
     suffix = f".{timestamp}" if timestamp else ""
 
     print("Annotating full graph with reaction orientation and SMILES...")
