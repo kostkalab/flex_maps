@@ -1,0 +1,34 @@
+name: flex_maps_dl_env
+channels:
+  - nvidia
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - setuptools<81
+  - numpy=1.26.4
+  - pandas
+  - pyarrow
+  - rdkit=2024.03.*
+  - scikit-learn
+  - pytorch=2.2.1
+  - pytorch-cuda=12.1
+  - pip:
+    - --find-links=https://data.pyg.org/whl/torch-2.2.0+cu121.html
+    - torch_geometric==2.6.1
+    - pyg_lib
+    - torch_scatter
+    - torch_sparse
+    - torch_cluster
+    - torch_spline_conv
+    - numpy==1.26.4
+    - transformers==4.45.2
+    - sentencepiece
+    - accelerate
+    - OpenNMT-py==1.2.0
+    - torchdata==0.7.1
+    - python-box==7.2.0
+    - rxnmapper
+    - localmapper
+    - git+https://github.com/licheng-xu-echo/RXNGraphormer.git@pytorch2

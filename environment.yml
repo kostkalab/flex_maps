@@ -25,5 +25,6 @@ dependencies:
   - weasyprint
   - pip
   - pip:
+    - drfp
     - markdown
     

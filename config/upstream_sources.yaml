@@ -1,0 +1,26 @@
+upstream:
+  repo: kostkalab/flex_embeddings
+  release: v1.0.3
+  api_base: https://api.github.com
+
+cache_roots:
+  smiles: data/kegg
+  embeddings: data/embeddings
+
+artifacts:
+  joint_smiles:
+    role: smiles
+    cache_root: smiles
+    asset_pattern: "^kegg_smiles_joint\\..*\\.tsv\\.gz$"
+  fingerprints_raw:
+    role: compound_fingerprint
+    representation: raw_morgan
+    cache_root: embeddings
+    asset_pattern: "^kegg_fingerprints_raw\\.joint\\..*\\.pkl\\.gz$"
+    compatible_with: joint_smiles
+  fingerprints_pca256:
+    role: compound_embedding
+    representation: pca_morgan
+    cache_root: embeddings
+    asset_pattern: "^kegg_fingerprints_pca256\\.joint\\..*\\.pkl\\.gz$"
+    compatible_with: fingerprints_raw
