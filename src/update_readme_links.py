@@ -48,7 +48,13 @@ def build_links(root: Path) -> list[str]:
 
 
 def replace_section(text: str, lines: list[str]) -> str:
-    new_block = "\n".join(lines) + "\n"
+    new_block = (
+        "Latest packaged maps, reaction tables, reaction embeddings, and validation files\n"
+        "are available from [GitHub Releases](../../releases).\n\n"
+        "Current checked-in map files:\n\n"
+        + "\n".join(lines)
+        + "\n"
+    )
     pattern = re.compile(r"(## Download links for maps\n)(?:\n)?(.*?)(?=\n## |\Z)", re.S)
     match = pattern.search(text)
     if not match:

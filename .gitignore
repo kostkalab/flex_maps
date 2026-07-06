@@ -25,6 +25,8 @@ results/
 
 # Generated reports/archives staging
 maps/*.tmp
+maps/.gitkeep
+release/
 
 # Misc
 *.swp

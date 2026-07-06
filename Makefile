@@ -17,6 +17,7 @@ RESULTS_DIR := results
 SPECIES_DIR := species
 SRC_DIR := src
 MAPS_DIR := maps
+RELEASE_DIR := release
 UPDATE_README := $(SRC_DIR)/update_readme_links.py
 
 # External dependencies
@@ -118,6 +119,8 @@ help:
 	@echo "  make clean           Remove all outputs"
 	@echo "  make clean-<species> Remove outputs for one species"
 	@echo "  make dist            Package latest PDFs + GraphML.gz into $(MAPS_DIR)/ and update README links"
+	@echo "  make package-release Package maps, reaction tables, embeddings, and validation archives"
+	@echo "  make release         Upload packaged archives to a GitHub release"
 	@echo ""
 	@echo "Available species: $(SPECIES_CODES)"
 
@@ -142,3 +145,11 @@ dist: $(SPECIES_CODES)
 		echo "Packaged $$code -> $(MAPS_DIR)/"; \
 	done
 	@$(PYTHON) $(UPDATE_README)
+
+.PHONY: package-release
+package-release:
+	$(PYTHON) scripts/package_release.py --output-dir $(RELEASE_DIR)
+
+.PHONY: release
+release:
+	bash release.sh --release-only

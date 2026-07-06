@@ -4,10 +4,15 @@ This repository constructs species-specific metabolic reaction graphs by integra
 
 ## Download links for maps
 
-- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260702_163441.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260702_163441.pdf))
-- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260702_163441.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260702_163441.pdf))
-- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260702_163441.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260702_163441.pdf))
-- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260702_163441.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260702_163441.pdf))
+Latest packaged maps, reaction tables, reaction embeddings, and validation files
+are available from [GitHub Releases](../../releases).
+
+Current checked-in map files:
+
+- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260706_150859.pdf))
+- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260706_150859.pdf))
+- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260706_150859.pdf))
+- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260706_150859.pdf))
 
 ## Strategy used to create maps
 
@@ -105,7 +110,7 @@ table. GPU `0` is used by default; pass `--gpu 1` for another GPU or
 
 ```bash
 python generate_reaction_embeddings.py \
-  results/mmu/mouse_kegg_graph_pruned_annotated.reactions.20260702_163441.tsv \
+  results/mmu/mouse_kegg_graph_pruned_annotated.reactions.20260706_150859.tsv \
   --representation dl \
   --output-dir results/mmu/reaction_embeddings_dl \
   --offline \
