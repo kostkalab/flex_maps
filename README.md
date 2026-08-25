@@ -9,10 +9,10 @@ are available from [GitHub Releases](../../releases).
 
 Current checked-in map files:
 
-- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260706_150859.pdf))
-- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260706_150859.pdf))
-- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260706_150859.pdf))
-- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260706_150859.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260706_150859.pdf))
+- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260825_142901.pdf))
+- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260825_142901.pdf))
+- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260825_142901.pdf))
+- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260825_142901.pdf))
 
 ## Strategy used to create maps
 
@@ -158,6 +158,11 @@ Required external data:
 
 First run requires outbound HTTPS access for KEGG and MyGene downloads; subsequent runs use cached data in `data/kegg/`.
 
+Exact upstream releases, retrieval dates, download URLs, thermodynamic
+conditions, and input checksums for the published reconstruction are recorded in
+`config/upstream_sources.yaml`. Thermodynamic estimates use eQuilibrator API
+0.7.0 and Cache 0.7.1 at pH 7.5, ionic strength 0.25 M, pMg 3.0, and 298.15 K.
+
 ## Project structure
 
 ```
@@ -245,6 +250,22 @@ Run `make dist` to gzip the latest SMILES-supported GraphML per species and copy
 KEGG-only mode outputs (also under `results/<species_code>/`):
 - `results/<species>/<prefix>.dropped_modules.<timestamp>.csv` — Modules that met coverage before being excluded
 - `results/<species>/<prefix>.retained_modules.<timestamp>.csv` — Modules that satisfied all filters
+
+### Reproduce the manuscript network table
+
+Generate the compact six-column TSV and LaTeX table from a completed common
+pipeline timestamp:
+
+```bash
+python scripts/summarize_final_networks.py \
+  --timestamp 20260825_142901 \
+  --tsv results/network_summary.20260825_142901.tsv \
+  --latex results/network_summary.20260825_142901.tex
+```
+
+Omit `--timestamp` to use the latest timestamp available for every configured
+species. The script fails if a final reaction cannot be assigned uniquely to
+the hierarchical direct-gene, module-added, or pathway-only inclusion routes.
 
 ## Species configuration
 

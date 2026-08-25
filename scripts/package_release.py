@@ -164,11 +164,17 @@ def collect_release_files(
         add(files, archives["maps"], map_graph, f"maps/{map_graph.name}")
         add(files, archives["maps"], map_pdf, f"maps/{map_pdf.name}")
 
+        timestamped_dg0 = result_dir / f"reaction_dg0.{timestamp}.tsv"
+        dg0_table = (
+            timestamped_dg0
+            if timestamped_dg0.exists()
+            else result_dir / "reaction_dg0.tsv"
+        )
         table_files = [
             result_dir / f"{spec.output_prefix}.reactions.{timestamp}.tsv",
             result_dir / f"{spec.output_prefix}.smiles_dropped_reactions.{timestamp}.tsv",
             result_dir / f"{spec.output_prefix}.smiles_dropped_compounds.{timestamp}.tsv",
-            result_dir / "reaction_dg0.tsv",
+            dg0_table,
         ]
         for path in table_files:
             add(
