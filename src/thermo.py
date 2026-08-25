@@ -46,6 +46,11 @@ BALANCING_COMPOUNDS = [
     *CURRENCY_BALANCING_COMPOUNDS,
 ]
 
+THERMODYNAMIC_PH = 7.5
+THERMODYNAMIC_IONIC_STRENGTH_M = 0.25
+THERMODYNAMIC_PMG = 3.0
+THERMODYNAMIC_TEMPERATURE_K = 298.15
+
 
 @dataclass
 class ReactionFormula:
@@ -126,14 +131,19 @@ def _component_contribution():
     cache_home.mkdir(parents=True, exist_ok=True)
     os.environ.setdefault("XDG_CACHE_HOME", str(cache_home))
     try:
-        from equilibrator_api import ComponentContribution
+        from equilibrator_api import ComponentContribution, Q_
     except ImportError as exc:
         raise RuntimeError(
             "DG0 calculation requires the optional equilibrator-api package. "
             "Install it in the DG0 calculation environment before running "
             "build_reaction_dg0.py."
         ) from exc
-    return ComponentContribution()
+    cc = ComponentContribution()
+    cc.p_h = Q_(THERMODYNAMIC_PH)
+    cc.ionic_strength = Q_(THERMODYNAMIC_IONIC_STRENGTH_M, "M")
+    cc.p_mg = Q_(THERMODYNAMIC_PMG)
+    cc.temperature = Q_(THERMODYNAMIC_TEMPERATURE_K, "K")
+    return cc
 
 
 def calculate_dg0_record(

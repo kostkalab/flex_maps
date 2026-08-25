@@ -3,6 +3,38 @@ upstream:
   release: v1.0.3
   api_base: https://api.github.com
 
+reconstruction_sources:
+  kegg:
+    release: "117.0+/02-25"
+    retrieved: "2026-02-24"
+    rest_base: https://rest.kegg.jp
+  metanetx:
+    release: "MNXref 4.5"
+    url: https://www.metanetx.org/ftp/4.5/MNXref.ttl.gz
+    local_file: data/metanetx/MNXref.ttl
+    sha256: fefd46f397add863bb825d838358cdef4d75188b3810682e0f28c6fb7d49af59
+  ncbi_gene_info:
+    retrieved: "2026-02-24"
+    url: https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_info.gz
+    local_file: data/ncbi/gene_info.20260224.gz
+    sha256: 46a8dc8989ac893a302dc66d496be0d04eb185e693cb5ddf6c289ba02463a43b
+  ncbi_gene2ensembl:
+    retrieved: "2026-02-24"
+    url: https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2ensembl.gz
+    local_file: data/ncbi/gene2ensembl.20260224.gz
+    sha256: 683218616bee5e68463b4c4dbb4be1bdcff7f7a7c94d7278642a570c4c269cea
+  equilibrator:
+    api_version: "0.7.0"
+    cache_version: "0.7.1"
+    compound_cache_doi: https://doi.org/10.5281/zenodo.4128543
+    compound_cache_md5: 9b66b85a886926d09755a66a3b452b6b
+    parameters_doi: https://doi.org/10.5281/zenodo.19557433
+    parameters_md5: 2d75616a89f5e22161befa708a5afe4f
+    pH: 7.5
+    ionic_strength_M: 0.25
+    pMg: 3.0
+    temperature_K: 298.15
+
 cache_roots:
   smiles: data/kegg
   embeddings: data/embeddings
@@ -12,6 +44,8 @@ artifacts:
     role: smiles
     cache_root: smiles
     asset_pattern: "^kegg_smiles_joint\\..*\\.tsv\\.gz$"
+    release_url: https://github.com/kostkalab/flex_embeddings/releases/download/v1.0.3/kegg_smiles_joint.20260701.tsv.gz
+    sha256: 11aa81052bc28ee8b367e4e49b1051db7b10fb9a9a1a944f6192ef61339c2d89
   fingerprints_raw:
     role: compound_fingerprint
     representation: raw_morgan

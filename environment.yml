@@ -20,6 +20,8 @@ dependencies:
   - tqdm
   - networkx
   - rdflib
+  - equilibrator-api=0.7.0
+  - equilibrator-cache=0.7.1
   - matplotlib
   - ipywidgets
   - pyyaml
