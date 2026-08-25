@@ -181,6 +181,22 @@ def build_kegg_digraph(
     rxn_comments = indices["rxn_comments"]
     mnx_chem_to_kegg = indices["mnx_chem_to_kegg"]
 
+    ambiguous_mappings = {
+        kegg_rxn: sorted(kegg_to_mnxr[kegg_rxn])
+        for kegg_rxn in sorted(kegg_rxn_ids)
+        if len(kegg_to_mnxr.get(kegg_rxn, ())) > 1
+    }
+    if ambiguous_mappings:
+        details = "; ".join(
+            f"{kegg_rxn} -> {', '.join(mnxrs)}"
+            for kegg_rxn, mnxrs in ambiguous_mappings.items()
+        )
+        raise ValueError(
+            "MetaNetX contains multiple reaction mappings for one or more KEGG "
+            "reactions. Refusing to merge potentially alternative reaction "
+            f"representations: {details}"
+        )
+
     G = nx.DiGraph()
 
     for kegg_rxn in tqdm(kegg_rxn_ids, desc="Building graph"):
