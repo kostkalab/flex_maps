@@ -367,7 +367,9 @@ def run_pipeline(
     suffix = f".{timestamp}" if timestamp else ""
 
     print("Annotating full graph with reaction orientation and SMILES...")
-    reactions.build_oriented_reaction_table(G, smiles_map=smiles_records)
+    full_reaction_table = reactions.build_oriented_reaction_table(
+        G, smiles_map=smiles_records
+    )
 
     full_graph_path = (
         species_output_dir / f"{config.output_prefix}.full{suffix}.graphml"
@@ -472,11 +474,14 @@ def run_pipeline(
     reaction_table_path = (
         species_output_dir / f"{config.output_prefix}.reactions{suffix}.tsv"
     )
-    reaction_table = reactions.build_oriented_reaction_table(
-        G,
-        smiles_map=smiles_records,
-        output_path=reaction_table_path,
-    )
+    # ``build_oriented_reaction_table`` physically orients graph edges.  Rebuilding
+    # it here would use those already-oriented edges as its MetaNetX sides and
+    # reverse positive-DG0 reactions a second time.  Keep the first orientation
+    # result and retain only reactions that survived filtering and pruning.
+    reaction_table = full_reaction_table[
+        full_reaction_table["reaction_node"].isin(G.nodes)
+    ].copy()
+    reaction_table.to_csv(reaction_table_path, sep="\t", index=False)
     print(f"Reaction table written to {reaction_table_path}")
 
     # Save output

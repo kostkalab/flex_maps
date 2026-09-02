@@ -9,10 +9,10 @@ are available from [GitHub Releases](../../releases).
 
 Current checked-in map files:
 
-- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260825_142901.pdf))
-- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260825_142901.pdf))
-- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260825_142901.pdf))
-- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260825_142901.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260825_142901.pdf))
+- Danio rerio ([map](./maps/zebrafish_kegg_graph_pruned_annotated.20260902_134654.graphml.gz?raw=1), [stats](./maps/zebrafish_kegg_graph_pruned_annotated.20260902_134654.pdf))
+- Homo sapiens ([map](./maps/human_kegg_graph_pruned_annotated.20260902_134654.graphml.gz?raw=1), [stats](./maps/human_kegg_graph_pruned_annotated.20260902_134654.pdf))
+- Mus musculus ([map](./maps/mouse_kegg_graph_pruned_annotated.20260902_134654.graphml.gz?raw=1), [stats](./maps/mouse_kegg_graph_pruned_annotated.20260902_134654.pdf))
+- Xenopus laevis ([map](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260902_134654.graphml.gz?raw=1), [stats](./maps/xenopus-laevis_kegg_graph_pruned_annotated.20260902_134654.pdf))
 
 ## Strategy used to create maps
 
