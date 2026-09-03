@@ -8,7 +8,7 @@ import pandas as pd
 from weasyprint import HTML, CSS
 from markdown import markdown
 
-from . import chem, graph, kegg, metanetx, reactions, thermo
+from . import chem, graph, kegg, metanetx, reactions, thermo, validation
 
 
 @dataclass
@@ -481,6 +481,7 @@ def run_pipeline(
     reaction_table = full_reaction_table[
         full_reaction_table["reaction_node"].isin(G.nodes)
     ].copy()
+    validation.validate_graph_sidecar(G, reaction_table, raise_on_error=True)
     reaction_table.to_csv(reaction_table_path, sep="\t", index=False)
     print(f"Reaction table written to {reaction_table_path}")
 

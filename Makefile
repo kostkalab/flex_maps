@@ -119,7 +119,8 @@ help:
 	@echo "  make clean           Remove all outputs"
 	@echo "  make clean-<species> Remove outputs for one species"
 	@echo "  make dist            Package latest PDFs + GraphML.gz into $(MAPS_DIR)/ and update README links"
-	@echo "  make package-release Package maps, reaction tables, embeddings, and validation archives"
+	@echo "  make validate-release TIMESTAMP=<timestamp> Validate release artifacts"
+	@echo "  make package-release TIMESTAMP=<timestamp> Validate and package release artifacts"
 	@echo "  make release         Upload packaged archives to a GitHub release"
 	@echo ""
 	@echo "Available species: $(SPECIES_CODES)"
@@ -146,9 +147,14 @@ dist: $(SPECIES_CODES)
 	done
 	@$(PYTHON) $(UPDATE_README)
 
+.PHONY: validate-release
+validate-release:
+	@test "$(origin TIMESTAMP)" = "command line" || (echo "ERROR: provide TIMESTAMP=<build timestamp>" && exit 1)
+	$(PYTHON) scripts/validate_release.py --timestamp $(TIMESTAMP)
+
 .PHONY: package-release
-package-release:
-	$(PYTHON) scripts/package_release.py --output-dir $(RELEASE_DIR)
+package-release: validate-release
+	$(PYTHON) scripts/package_release.py --timestamp $(TIMESTAMP) --output-dir $(RELEASE_DIR)
 
 .PHONY: release
 release:
